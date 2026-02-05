@@ -1,0 +1,34 @@
+AWS Billing & Cost Management 
+1. AWS Billing Dashboard
+
+Location: Top-right corner → “Billing and Cost Management”
+
+Here you can access:
+Payments: Manage card details and view payment history.
+Bills: View detailed monthly bills, broken down service-by-service.
+Cost Management: Analyze where your money is being spent.
+
+2. Billing Alerts (Your Safety Net!)
+
+The 30GB storage example you mentioned is perfect.
+
+Why are they important?
+Cloud usage can easily go unnoticed (“out of sight, out of mind”), leading to unexpectedly high bills. Alerts help you stay informed and in control.
+
+How it works:
+
+Set a limit (e.g., $50).
+When your current or forecasted bill exceeds this limit, AWS sends you an email or SMS alert.
+
+Example:
+You expected 30GB on S3, but your app goes viral and usage hits 31GB. The alert immediately notifies you, allowing you to control costs before it gets out of hand.
+
+3. How to Set Billing Alerts (Simple Steps)
+
+Open the Billing Console.
+Navigate to “Billing Preferences” or “Budgets”.
+Click “Create a Budget”.
+Enter your limit amount and email ID.
+Save — done! ✅
+
+Tip: Never start using the cloud without billing alerts. Think of it like a seatbelt in your car — you won’t notice it, but one day it can save you from a big bill.
