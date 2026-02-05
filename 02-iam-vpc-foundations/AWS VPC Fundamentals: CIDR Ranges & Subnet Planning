@@ -1,0 +1,98 @@
+Introduction to VPC (Virtual Private Cloud)
+
+What is a VPC?
+A secure, logically isolated network environment within AWS
+Region-specific - cannot span across multiple AWS regions
+Provides complete control over networking resources and configurations
+Similar to having your own private data center within AWS infrastructure
+
+VPC Isolation & Communication
+Default isolation: Different VPCs cannot communicate with each other
+
+Example Scenario:
+
+Customer A's VPC cannot communicate with Customer B's VPC
+Even within same AWS account, VPCs in different regions cannot communicate
+Enabling communication: Requires VPC Peering configuration
+
+Practical Example:
+A company running applications in London region requires disaster recovery replication in US region → Must establish VPC Peering for connectivity
+
+VPC Architecture Overview
+
+Typical AWS Account Structure:
+
+Select AWS Region
+Create VPC within chosen region
+Access to 3 Availability Zones (AZs) within region
+Deploy servers across AZs for high availability
+
+Core Component: CIDR (Classless Inter-Domain Routing)
+
+Understanding CIDR:
+CIDR is the most critical component of VPC configuration - it defines the network address space for your virtual data center.
+
+Private IPv4 Address Ranges (RFC 1918):
+Range Name	               IP Address Range	           Total Addresses	 Common Notation
+24-bit block (Class A)	10.0.0.0 - 10.255.255.255	      16,777,216	     10.0.0.0/8
+20-bit block (Class B)	172.16.0.0 - 172.31.255.255	    1,048,576	       172.16.0.0/12
+16-bit block (Class C)	192.168.0.0 - 192.168.255.255  	65,536	         192.168.0.0/16
+
+Key Concept:
+When creating a VPC, you define a CIDR block (network range). Every resource (server, database, etc.) deployed within that VPC receives an IP address from this predefined range.
+
+Understanding CIDR Notation
+Example Analysis: 192.168.1.0/24
+Total bits: 32 bits (IPv4 standard)
+
+Network bits: 24 bits (prefix length)
+
+Host bits: 8 bits (32 - 24 = 8)
+
+Address Calculation:
+Formula: 2^(host bits) = Total usable addresses
+
+For /24: 2^8 = 256 total addresses
+
+Usable hosts: 256 - 2 = 254 (excluding network and broadcast addresses)
+
+Subnet Division Concept
+
+Understanding Subnets:
+Think of a CIDR block as a whole apple. When you divide it into pieces, each piece becomes a subnet (sub-network).
+
+Subnet Division Example:
+Original CIDR: 192.168.1.0/24 (256 addresses)
+
+When divided into 2 subnets:
+Subnet 1: 192.168.1.0/25
+IP Range: 192.168.1.0 - 192.168.1.127
+Total addresses: 128
+Usable hosts: 126
+
+Subnet 2: 192.168.1.128/25
+IP Range: 192.168.1.128 - 192.168.1.255
+Total addresses: 128
+Usable hosts: 126
+
+Mathematics Behind Subnetting:
+Original: /24 = 32-24 = 8 host bits
+
+After dividing by 2: 2^7 = 128 addresses per subnet
+New prefix: 24 + 1 = /25 (added 1 bit for subnetting)
+
+Visual Representation:
+
+Original: 192.168.1.0/24 (256 addresses)
+         ↓ Divide into 2 equal parts ↓
+  Subnet A: 192.168.1.0/25    (128 addresses)
+  Subnet B: 192.168.1.128/25  (128 addresses)
+
+Critical Best Practice
+CIDR planning is your VPC's blueprint. Changing CIDR ranges after deployment is extremely difficult. Always carefully plan your network architecture from the beginning, considering:
+Current requirements
+Future growth
+Multi-VPC connectivity needs
+Integration with on-premise networks
+
+Remember: Proper CIDR planning at the initial stage prevents costly architectural changes later in your project lifecycle.
