@@ -1,0 +1,98 @@
+CIDR Subnetting Trick
+Quick Calculation Method:
+
+When you have a CIDR like 192.168.1.0/24 and want to subnet it to /25:
+
+Formula:
+Number of Subnets = 2<sup>(New Prefix - Old Prefix)</sup>
+Example Calculation:
+
+Original: /24
+New: /25
+
+Difference: 25 - 24 = 1
+Subnets: 2<sup>1</sup> = 2 subnets
+
+Additional Examples:
+/24 → /26: 2<sup>(26-24)</sup> = 2<sup>2</sup> = 4 subnets
+/16 → /20: 2<sup>(20-16)</sup> = 2<sup>4</sup> = 16 subnets
+/16 → /24: 2<sup>(24-16)</sup> = 2<sup>8</sup> = 256 subnets
+
+Analyzing Default VPC in Tokyo Region
+
+Default VPC Configuration:
+CIDR Block: 172.31.0.0/16
+
+Step 1: Calculate Total IP Addresses
+Prefix: /16
+
+Available bits: 32 - 16 = 16 bits
+Total IPs: 2<sup>16</sup> = 65,536 addresses
+Range: 172.31.0.0 to 172.31.255.255
+
+Step 2: Analyzing Default Subnets
+
+Observed Subnet: 172.31.64.0/20
+Calculate Number of Subnets:
+Original: /16
+New: /20
+Difference: 20 - 16 = 4 bits
+Number of Subnets: 2<sup>4</sup> = 16 subnets ✓
+
+Step 3: Per-Subnet Capacity Calculation
+Subnet Size: /20
+Available bits: 32 - 20 = 12 bits
+IPs per subnet: 2<sup>12</sup> = 4,096 addresses
+Reserved IP Addresses in Each Subnet
+
+5 Reserved IPs per Subnet:
+Each subnet automatically reserves 5 IP addresses:
+
+IP Address	Purpose
+10.0.0.0	Network Address: Defines the network boundary.
+10.0.0.1	VPC Router: The default gateway for the subnet.
+10.0.0.2	Amazon DNS: The IP for the VPC's internal DNS server.
+10.0.0.3	Future Use: Reserved by AWS for potential future features.
+10.0.0.255	Broadcast Address: Reserved for network broadcast (though AWS doesn't support broadcast).
+
+Reserved IPs: 5
+
+Usable IPs: 4,096 - 5 = 4,091
+
+Complete Default VPC Subnet Structure
+16 Subnet Distribution Example:
+With 172.31.0.0/16 divided into /20 subnets:
+
+Subnet	CIDR Block	IP Range	Usable Range
+Subnet 1	172.31.0.0/20	0 - 4,095	172.31.0.4 - 172.31.15.254
+Subnet 2	172.31.16.0/20	4,096 - 8,191	172.31.16.4 - 172.31.31.254
+Subnet 3	172.31.32.0/20	8,192 - 12,287	172.31.32.4 - 172.31.47.254
+Subnet 4	172.31.48.0/20	12,288 - 16,383	172.31.48.4 - 172.31.63.254
+Subnet 5	172.31.64.0/20	16,384 - 20,479	172.31.64.4 - 172.31.79.254
+...	...	...	...
+
+Subnet 16	172.31.240.0/20	61,440 - 65,535	172.31.240.4 - 172.31.255.254
+
+Key Observations:
+Each subnet gets 4,096 consecutive IP addresses
+Subnet boundaries follow binary progression (multiples of 16, 32, 48, etc.)
+AWS creates one subnet per Availability Zone in the region
+
+Practical Applications
+
+For Your Projects:
+
+Plan subnets based on application requirements
+Reserve extra capacity for future growth
+Consider public/private subnet segregation
+Account for VPC endpoints and VPC Peering requirements
+
+Power of 2 Calculations:
+Mastering these 2<sup>n</sup> calculations is crucial for:
+Network planning and CIDR allocation
+Subnet design across multiple AZs
+Route table and NACL configurations
+IP address management in complex architectures
+
+Expert Tip: These subnet mathematics form the foundation of AWS networking. The ability to quickly calculate subnet divisions, understand IP reservations, and plan network architectures will make you a proficient AWS architect. Practice with different CIDR blocks to build intuitive understanding!
+
