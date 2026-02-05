@@ -1,0 +1,81 @@
+Session Manager – “Bastion Without Bastion” ✨
+
+AWS built-in service that lets you connect directly to EC2 instances without SSH keys, open ports, or a Bastion host.
+
+How It Works
+
+Traditional Way:
+You → Internet → Bastion Host (Port 22) → Private EC2
+
+
+Session Manager Way:
+You → AWS Console / CLI → AWS SSM Service → Private EC2
+[No open ports anywhere!]
+
+Requirements (Setup)
+
+SSM Agent: Pre-installed on Amazon Linux 2 and Windows EC2 instances
+IAM Role: Attach AmazonSSMManagedInstanceCore policy to EC2
+Your IAM User/Role: Must have ssm:StartSession permission
+
+How to Use
+
+Option 1 – AWS Console:
+Go to AWS Console → Systems Manager → Session Manager
+Select target EC2 → Start session
+Terminal opens in your browser
+
+Option 2 – AWS CLI:
+
+# Connect directly
+aws ssm start-session --target i-123abcdefghijk
+
+# Port forwarding (localhost:8888 → EC2:80)
+aws ssm start-session --target i-123abc \
+  --document-name AWS-StartPortForwardingSession \
+  --parameters '{"portNumber":["80"],"localPortNumber":["8888"]}'
+
+Key Features
+-Feature	Benefit
+-No SSH Keys	No key management, rotation, or leakage risk
+-No Open Ports	Port 22/3389 closed → Improved security
+-IAM-Based Access	Fine-grained control over who can access which instances
+-Audit Logs	Every session logged in CloudTrail (+ optional S3)
+-No Extra Cost	Saves EC2 cost for bastion hosts
+-Port Forwarding	Secure tunnel for databases or GUIs
+-Real Use Case
+
+Old Way (Bastion Host):
+
+# 1. SSH to bastion
+ssh -i key.pem ec2-user@bastion-ip
+
+# 2. SSH from bastion to private DB
+ssh -i key.pem ec2-user@db-private-ip
+
+
+New Way (Session Manager):
+
+# Single command!
+aws ssm start-session --target i-db-instance-id
+
+
+Terminal opens directly in the browser.
+
+Security Comparison
+Aspect	Bastion Host	Session Manager
+Attack Surface	Port 22 open	No inbound ports
+Authentication	SSH keys + IP whitelist	IAM + MFA
+Auditability	Manual log management	Automatic CloudTrail logging
+Credential Mgmt	SSH key rotation headache	No keys needed
+Limitations
+
+Internet Required: EC2 needs internet to reach SSM service (can use VPC Endpoints)
+CLI/Console Needed: Best for technical users (non-technical users may require training)
+File Transfer: Requires separate setup (aws ssm send-command)
+
+Migration Path (Bastion → Session Manager)
+Enable SSM Agent on existing EC2 instances (attach IAM role)
+Train developers to use Session Manager
+Gradually restrict Bastion access
+Finally, terminate Bastion → save monthly EC2 costs
