@@ -1,0 +1,75 @@
+Bastion Host – “Secure Gateway” 🚪🔐
+
+A Bastion Host is a special EC2 instance located on the public internet that allows secure access to private VPC servers (which are not directly accessible from the internet).
+
+Why It’s Necessary
+
+Problem: Production servers reside in a private subnet (no public IP).
+
+Question: How can developers/admins securely SSH into these servers in private subnet?
+Wrong Solution: Assign public IPs → Security risk!
+
+Right Solution: Use a Bastion Host.
+
+Architecture
+Internet → Bastion Host (Public Subnet) → Private Servers (Private Subnet)
+              [Security Gateway]                [DB/App Servers]
+
+How It Works
+
+Step 1 – SSH to Bastion:
+ssh -i key.pem ec2-user@bastion-public-ip
+
+
+Step 2 – SSH from Bastion to Private Server:
+ssh -i key.pem ec2-user@private-server-ip
+
+
+Or Single Command (Jump Host):
+ssh -i key.pem -J bastion-user@bastion-ip ec2-user@private-ip
+
+Security Best Practices
+
+✅ Do:
+
+Strong Security Groups: Only allow office IP → Bastion (port 22)
+No Persistent Storage: Avoid storing sensitive data on Bastion
+Multi-Factor Authentication (MFA): Use AWS Systems Manager Session Manager
+Regular Patching: Keep Bastion updated
+Audit Logs: Enable CloudTrail + SSH logs
+
+❌ Don’t:
+
+Store production keys/credentials on Bastion
+Give access to everyone (follow least privilege)
+Use Bastion for other services (only as a jump box)
+
+Modern Alternative: AWS Systems Manager Session Manager
+
+No SSH key management
+No open port 22
+IAM-based authentication
+CloudTrail logging
+No EC2 cost (Bastion instance not needed)
+
+Command Example:
+
+aws ssm start-session --target i-123abc
+
+Bastion vs Jump Box vs Session Manager
+Feature	Bastion Host	Session Manager
+Access	SSH/RDP	Browser/CLI via SSM
+Port	Port 22/3389 open	No inbound ports
+Authentication	SSH Keys + IP whitelist	IAM Roles + MFA
+Cost	EC2 running cost	Minimal / No extra
+Logging	Manual setup	Automatic (CloudTrail)
+Real-World Example
+
+Company: E-commerce site
+
+Setup:
+
+Web servers in public subnet (via load balancer)
+Database servers in private subnet
+Bastion host in public subnet with strict IP whitelisting
+Workflow: Developers SSH → Bastion → DB servers for maintenance
