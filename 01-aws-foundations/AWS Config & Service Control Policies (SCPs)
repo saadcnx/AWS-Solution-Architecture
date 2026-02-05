@@ -1,0 +1,60 @@
+AWS Config – “Security Camera + Auditor”
+Purpose: Continuous monitoring and recording of what resources exist and how they are configured.
+
+Example:
+
+Camera records: “EC2 instance X launched on Jan 10, SSH port open, not encrypted”
+Auditor checks: “Is this EC2 instance compliant with our rules?”
+
+Use Cases:
+
+PCI DSS compliance checks
+Ensure all S3 buckets are encrypted
+Track configuration changes over time
+Analogy: Like a CCTV + checklist guard that records every resource and verifies it against the rules.
+
+Service Control Policies (SCPs) – “Boundary Wall + Gate Rules”
+Purpose: Set permission boundaries for who can do what across entire AWS accounts.
+
+Examples:
+
+No one in the Dev account can create an EC2 instance larger than t3.large
+No one can disable CloudTrail
+No S3 buckets can be made public
+
+Use Cases:
+
+Prevent accidental creation of expensive resources
+Enforce security guardrails
+Control allowed regions/services
+Analogy: Like the main gate of a society with pre-set rules: “bikes allowed, trucks not allowed.”
+
+Key Differences Between AWS Config & SCPs
+
+Aspect  	AWS Config  	                     SCPs
+Type	    Detective Control                	Preventive Control
+Level	    Resource Level      	             Account / OU Level
+Timing	  After creation (monitors)	         Before creation (blocks)
+Focus	    “What exists & is it compliant?”	“What CAN be created?”
+
+Real-World Combined Example
+Problem: Company wants no public S3 buckets.
+
+Solution:
+
+SCP (Preventive):
+Blocks public buckets from being created from the start.
+
+
+"Deny": {
+  "Effect": "Deny",
+  "Action": "s3:PutBucketPolicy",
+  "Condition": {"StringEquals": {"s3:x-amz-acl": "public-read"}}
+}
+
+
+AWS Config (Detective):
+
+Rule: s3-bucket-public-read-prohibited
+Alerts if a bucket somehow becomes public
+Shows non-compliant resources
