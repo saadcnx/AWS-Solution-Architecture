@@ -1,4 +1,4 @@
-# AWS Solution Architecture – Real-World Learning Repository
+# AWS Solution Architecture – Real-World Hands-on Learning Repository
 
 ## 📌 Overview
 This repository documents my hands-on journey of learning and implementing **AWS Solution Architecture concepts** with a strong focus on **real-world system design**.
