@@ -1,0 +1,47 @@
+AWS Access Keys & Permission Copying 
+
+1. Access Keys (Developer’s Lifeline)
+
+Why Needed: Required for programmatic access via AWS APIs, CLI, or SDKs.
+
+Examples:
+
+Infrastructure deployment via Terraform or CloudFormation
+Calling AWS services from Python/Java code
+CI/CD pipelines (Jenkins, GitHub Actions)
+
+Components:
+
+Access Key ID: Like a username
+Secret Access Key: Like a password (keep it secret!)
+
+2. Permission Copying – Save Time & Effort
+
+Use the “Copy permissions from existing user” option when:
+Employee changes (e.g., admin1 → admin2)
+New user needs the same permissions as an existing one
+Benefit: Instead of manually adding 20+ groups, all permissions are copied with one click.
+
+3. Access Key Management – Crucial Points
+
+Secret Key is shown only once!
+Save or download it immediately, otherwise a new key must be generated.
+Safe Deletion Procedure:
+Make the key inactive
+Test that no system fails
+Then delete
+
+4. Real-World Scenario
+
+Situation: Replace Admin1 (leaving company) with Admin2
+
+Steps:
+
+Create new user Admin2
+Select “Copy permissions from existing user” → choose Admin1
+Enable access keys for Admin2
+Save secret key safely
+Deactivate/delete Admin1’s keys
+
+Pro Advice:
+“Access keys are the master keys to your cloud. Never leave them unsecured! Save secret keys immediately in a password manager; otherwise, you’ll never get them back.”
