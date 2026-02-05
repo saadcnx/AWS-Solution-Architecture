@@ -1,0 +1,57 @@
+1. What is AWS?
+
+AWS (Amazon Web Services) is Amazon’s cloud computing platform. It provides data center resources globally on a rental basis, eliminating the need to own or maintain physical servers.
+
+2. Pay-As-You-Go Model (Most Important)
+
+AWS follows a pay-as-you-go pricing model, similar to your electricity bill — you pay only for what you use. There are no upfront costs and no long-term commitments. Stop using a service, and the billing stops automatically.
+
+3. Main Service Models
+
+AWS primarily offers three service models:
+
+a) IaaS (Infrastructure as a Service)
+
+Definition: Rent raw infrastructure, including servers, storage, and networking.
+Examples: EC2 (Virtual Machines), S3 (Storage), VPC (Virtual Private Network)
+Management Responsibility: You manage the OS, runtime, and applications; AWS handles only the hardware.
+
+b) PaaS (Platform as a Service)
+
+Definition: A platform where you can directly deploy your code without worrying about underlying infrastructure.
+Examples: Elastic Beanstalk, RDS (Managed Databases)
+Management Responsibility: AWS manages OS, runtime, scaling; you focus solely on your code.
+
+c) SaaS (Software as a Service)
+
+Definition: Ready-to-use software accessible via the cloud.
+Examples: Salesforce, Office 365, AWS Chime
+
+4. Global Infrastructure (AWS’s Strength)
+
+AWS operates through Regions and Availability Zones (AZs) worldwide.
+
+Region: A geographical area (e.g., Mumbai, Singapore)
+Availability Zone (AZ): Separate physical data centers within a region. AZs ensure high availability — if one goes down, another continues serving traffic.
+
+5. Key AWS Services
+
+EC2: Virtual servers, the core of cloud computing.
+S3: Highly scalable object storage, like an “infinite hard disk” on the internet.
+VPC: Private cloud network, forming the foundation for security.
+IAM: Access management, controlling who can do what.
+RDS: Managed relational databases (MySQL, PostgreSQL, etc.) — database administration simplified.
+Lambda: Serverless computing — write code without worrying about servers; billed only for execution time.
+
+6. DevOps & AWS
+
+AWS fully supports the DevOps lifecycle:
+CI/CD: Use CodePipeline and CodeBuild for automated testing and deployment.
+Infrastructure as Code (IaC): Define your entire infrastructure in code using CloudFormation or Terraform — no more manual clicks.
+Monitoring: CloudWatch provides real-time monitoring of resources and applications.
+
+Final Note
+
+AWS empowers you with scalability, reliability, and security, but it also follows a shared responsibility model:
+AWS manages the underlying infrastructure.
+You are responsible for securing your applications and data.
