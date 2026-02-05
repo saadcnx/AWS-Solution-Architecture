@@ -1,0 +1,74 @@
+The Core Difference
+
+Stop = Pause Button 🎮
+
+Terminate = Delete Forever Button 🗑️
+
+Technical Breakdown
+STOP EC2 Instance
+
+State: Instance shuts down → moves to stopped state
+
+What persists:
+
+Root EBS volume and data ✅
+Additional EBS volumes ✅
+Instance ID & configuration ✅
+Elastic IP (if attached) ✅
+ENI (Network Interface) ✅
+
+Billing:
+
+❌ No EC2 instance charge
+✅ EBS storage charge applies (GB/month)
+✅ Elastic IP charge applies if not attached to a running instance
+
+Use Case:
+
+Temporary shutdown for maintenance
+Cost savings overnight
+Debugging
+TERMINATE EC2 Instance
+State: Instance shuts down → moves to terminated state → deleted permanently
+
+What gets deleted:
+
+Root EBS volume (default behavior) ❌
+Additional EBS volumes (if DeleteOnTermination: true) ❌
+Instance itself ❌
+
+Exception: Volumes with DeleteOnTermination: false survive
+
+Billing:
+
+❌ No EC2 charge
+❌ No EBS charge (for deleted volumes)
+✅ Elastic IP charge continues if not released
+
+Use Case:
+
+Permanent removal
+Cleanup
+Immutable infrastructure patterns
+
+⚠️ Production Mistakes (Real Horror Stories)
+
+Mistake: “I’ll just terminate this old instance…”
+Reality: Deletes EBS volumes with customer data
+
+Data Recovery: Near impossible unless snapshots exist
+Mistake: “Stopped instances don’t cost money!”
+
+Reality: Pays ₹5,000/month for 500GB of unused EBS volumes
+Mistake: “Terminate = Instant”
+
+Reality: Termination can take 60+ seconds. Someone might panic and force restart.
+Solution: Either terminate (delete volumes) or take snapshots → delete volumes
+
+Best Practices
+
+Always enable termination protection for production instances
+Tag everything: Environment=Prod, AutoDelete=No
+Take regular snapshots before any major changes
+Use Auto Scaling Groups instead of manual instance management
+Test changes in lower environments before production
