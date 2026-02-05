@@ -1,0 +1,90 @@
+Instance Metadata Service (IMDS) – Simplified
+
+Analogy: IMDS is like an EC2 instance’s internal ID card reader 🪪
+Each EC2 instance runs a private web server accessible only from that instance:
+
+http://169.254.169.254/latest/meta-data/
+
+
+This server provides instance-specific information, including:
+
+Instance ID
+Instance type
+Security groups
+Most importantly: Temporary AWS credentials (if an IAM Role is attached)
+
+How It Works
+
+Create an IAM Role (e.g., S3-ReadOnly-Role)
+Attach the Role to the EC2 instance
+IMDS automatically provides temporary credentials to the instance
+AWS SDK fetches credentials from IMDS automatically
+
+Example curl command:
+
+# Get temporary credentials
+curl http://169.254.169.254/latest/meta-data/iam/security-credentials/YourRoleName/
+
+
+Sample Output:
+
+{
+  "AccessKeyId": "ASIA...",
+  "SecretAccessKey": "...",
+  "Token": "...",
+  "Expiration": "2023-12-01T00:00:00Z"
+}
+
+IMDS Versions
+IMDSv1 (Old – Less Secure)
+
+Simple HTTP request
+No session token required
+Vulnerable to SSRF attacks
+
+IMDSv2 (New – Secure)
+
+Session-oriented: first get token, then use it
+PUT request required to get token
+Token expiry (typically 6 hours)
+Resistant to SSRF attacks
+Recommendation: Always use IMDSv2 for new instances
+Security Best Practices
+
+✅ Do:
+
+Use IAM Roles, not static access keys on instances
+Enforce IMDSv2 at the account level
+Apply least privilege permissions
+
+❌ Don’t:
+
+Expose IMDS to the internet
+Store long-term credentials on EC2
+Disable IMDS unless absolutely necessary
+Real-World Example
+
+Task: Read an S3 bucket from an EC2 instance
+
+Wrong Way: 📛
+
+Create IAM user
+Download access keys
+Paste in .aws/credentials on EC2
+
+Risk: Keys can leak, manual rotation needed
+
+Right Way: ✅
+
+Create IAM Role S3-Read-Role with S3 permissions
+Launch EC2 instance with the role attached
+In application code (Python):
+
+import boto3
+
+# No credentials needed!
+s3 = boto3.client('s3')  # Auto-fetches credentials from IMDS
+s3.list_buckets()
+
+
+AWS automatically handles credential rotation.
