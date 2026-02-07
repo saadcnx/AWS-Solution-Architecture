@@ -1,0 +1,160 @@
+AWS Security Layers: Internet Gateway, Security Groups & NACLs
+
+Internet Gateway (IGW) - Core Characteristics
+
+1. IGW-VPC Association Rules:
+
+Primary Rule:
+✅ One IGW per VPC (maximum)
+✅ Multiple IGWs can be created, but for different VPCs
+❌ Multiple IGWs cannot be attached to a single VPC
+
+Strategic Approach:
+Create IGWs in advance for future VPC deployments to streamline provisioning.
+
+2. IGW Technical Features:
+Horizontally Scaled: AWS automatically handles scaling
+Redundant & Highly Available: Never experiences downtime
+Dual Protocol Support: Native IPv4 & IPv6 compatibility
+
+AWS Managed: Backed by multiple ISP connections
+No Bandwidth Constraints: Automatically scales with traffic
+Security Groups (SG) - Instance-Level Firewall
+
+What are Security Groups?
+
+EC2 instance personal firewall
+Virtual NIC-level protection
+Stateful firewall: Allowed inbound traffic automatically permits return traffic
+Last line of defense for instance security
+
+Real-World Analogy:
+EC2 Instance = Your House
+Security Group = House Security Guard
+Guard checks every visitor before entry
+
+Key Characteristics:
+
+Operates at instance level
+Supports only ALLOW rules (implicit deny everything else)
+All rules evaluated (no priority order)
+Can reference other security groups
+Associated with network interfaces
+
+Network ACLs (NACL) - Subnet-Level Firewall
+
+What are Network ACLs?
+Subnet perimeter security
+
+Stateless firewall: Requires explicit rules for return traffic
+First line of defense - Filters traffic before entering subnet
+Optional security layer
+
+
+Real-World Analogy:
+Subnet = Housing Society
+NACL = Society Main Gate Security
+Security Group = Individual House Security Guard
+
+Key Characteristics:
+
+Operates at subnet level
+Supports ALLOW & DENY rules
+Rule number priority (evaluated sequentially)
+Stateless filtering (bidirectional rules required)
+Default NACL allows all traffic
+
+Security Group vs NACL Comparison
+Feature	              Security Group (SG)	                  Network ACL (NACL)
+Operational           Level	Instance                        level	Subnet level
+State  Management    	Stateful                            	Stateless
+Rule Types	          Allow rules only                      Allow & Deny rules
+Rule Evaluation       All rules evaluated	                  Sequential by rule number
+Defense Position	    Last line of defense	                First line of defense
+Default Behavior	    Deny all inbound, Allow all outbound	Allow all inbound/outbound
+Rule Reference	      Can reference other SGs	              IP ranges only
+Association	          With ENI (instance)	                  With subnets
+
+Complete Traffic Flow Analysis
+
+Inbound Traffic Path:
+Internet → IGW → Route Table → NACL (Subnet) → Security Group (EC2) → Instance
+
+Step-by-Step Flow:
+Step 1: Internet Gateway (IGW)
+Entry point to VPC from internet
+No traffic filtering performed
+
+Step 2: Route Table
+Determines traffic destination based on CIDR
+Routes to appropriate subnet
+
+Step 3: Network ACL (NACL)
+First security checkpoint
+Subnet-level traffic filtering
+Stateless rule evaluation
+Can explicitly deny malicious IP ranges
+
+Step 4: Security Group (SG)
+Final security checkpoint
+Instance-specific filtering
+Stateful connection tracking
+Application-level security
+
+Outbound Traffic Path (Reverse):
+Instance → Security Group → NACL (Subnet) → Route Table → IGW → Internet
+Practical Implementation Strategy
+
+When to Use NACLs:
+Subnet-level blocking (entire IP ranges)
+DDoS mitigation at perimeter
+Compliance requirements (explicit deny rules)
+Multi-tenant environments (strict isolation)
+
+When Security Groups Suffice:
+Standard web applications
+Development environments
+Microservices architectures
+Most production workloads
+
+Security Configuration Example
+
+Web Server Security Setup:
+
+NACL Rules (Subnet Level):
+Rule#  Type    Protocol    Port    Source        Action
+100    HTTP    TCP         80      0.0.0.0/0     ALLOW
+110    HTTPS   TCP         443     0.0.0.0/0     ALLOW
+120    SSH     TCP         22      203.0.113.0/24 ALLOW
+*      ALL     ALL         ALL     0.0.0.0/0     DENY
+
+Security Group Rules (Instance Level):
+Type    Protocol    Port    Source              Description
+HTTP    TCP         80      0.0.0.0/0           Web traffic
+HTTPS   TCP         443     0.0.0.0/0           Secure web traffic
+SSH     TCP         22      203.0.113.0/24      Admin access
+Custom  TCP         3306    app-sg-id           Database access
+
+Best Practices & Recommendations
+
+Security Groups (Primary Defense):
+
+Principle of least privilege - Minimum necessary ports
+Reference security groups instead of IP addresses
+Regular auditing of security group rules
+Use descriptive names for rule tracking
+
+Network ACLs (Supplementary Defense):
+
+Default deny all at end of rule list
+Block known malicious IPs at perimeter
+Use for compliance controls when required
+Monitor with VPC Flow Logs
+
+Layered Security Approach:
+Internet Traffic → IGW → Route Table → NACL → Security Group → Instance
+                  ↓          ↓           ↓          ↓           ↓
+              No Filter   Routing    Subnet     Instance    Application
+                                 Perimeter    Perimeter    Security
+
+Architectural Insight: While Security Groups typically provide sufficient protection for most workloads, NACLs offer an additional security layer for specific use cases. The combination creates a defense-in-depth strategy where NACLs act as the perimeter fence and Security Groups serve as individual building security systems. Most organizations find Security Groups alone are adequate, reserving NACLs for compliance requirements or specific threat mitigation scenarios.
